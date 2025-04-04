@@ -13,3 +13,8 @@ docker-compose*.yml
 
 *.log
 *.tmp
+
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
