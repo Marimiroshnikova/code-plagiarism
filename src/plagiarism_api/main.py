@@ -21,7 +21,7 @@ client = OpenAI(
 class CodeRequest(BaseModel):
     code: str
 
-PROMPT_TEMPLATE = """Analyze if this code is plagiarized using these criteria:
+PROMPT_TEMPLATE = """Analyze whether this code is plagiarized using the following criteria:
 1. Code structure similarity
 2. Variable/method naming patterns
 3. Algorithm implementation uniqueness
@@ -38,7 +38,7 @@ Answer strictly 'yes' or 'no'. """
 async def check_plagiarism(request: CodeRequest):
     try:
         if len(request.code) > 10000:
-            raise HTTPException(status_code=400, detail="Code exceeds 10k character limit")
+            raise HTTPException(status_code=400, detail="Code exceeds 10,000 character limit")
         
         # VectorDB query
         results = vdb.query(request.code[:2000])
@@ -63,7 +63,7 @@ async def check_plagiarism(request: CodeRequest):
         )
         
         answer = response.choices[0].message.content.strip().lower()
-        return {"result": "კი" if answer.lower() == "yes" else "არა"}
+        return {"result": "yes" if answer == "yes" else "no"}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

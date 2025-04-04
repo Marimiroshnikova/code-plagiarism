@@ -1,7 +1,9 @@
+Here's a refined and properly formatted README.md:
+
+```markdown
 # Code Plagiarism Detection System
 
 A multi-stage plagiarism detection system combining semantic code analysis with LLM validation.
-
 
 ## Features
 
@@ -11,211 +13,182 @@ A multi-stage plagiarism detection system combining semantic code analysis with 
 - **Semantic Search**: ChromaDB vector database
 - **LLM Analysis**: GPT-3.5 powered validation
 - **Evaluation Suite**: Comparative testing framework
-- **Dockerized Services**: Containerized microservices
-
-
+- **Dockerized Services**: Containerized microservices architecture
 
 ## System Architecture
 
 ```
-
 code-plagiarism-detector/
-├── .vscode/
-│   ├── settings.json
-│   └── extensions.json
-├── configs/						# Configuration files
-│   ├── repositories.txt			# List of target GitHub repos
-│   └── model_config.yaml		# Embedding model settings
-├── data/							# Persistent data storage
-│   ├── evaluation_results/
-│   ├── repositories/			# Cloned GitHub repositories
-│   │   ├── examples/
-│   │   ├── keras-io/
-│   │   └── models/
-│   ├── vector_db/				# ChromaDB vector database
-│   └── file_index.json			# Processed code file index
-├── docker/						# Docker configurations
+├── configs/                      # Configuration files
+│   ├── repositories.txt          # List of target GitHub repos
+│   └── model_config.yaml         # Embedding model settings
+├── data/                         # Persistent data storage
+│   ├── evaluation_results/       # Test comparison results
+│   ├── repositories/             # Cloned GitHub repositories
+│   ├── vector_db/                # ChromaDB vector database
+│   └── file_index.json           # Processed code file index
+├── docker/                       # Docker configurations
 │   ├── api.Dockerfile
 │   ├── embedding.Dockerfile
 │   └── indexer.Dockerfile
-├── src/							# Source code
-│   ├── embedding_service/		# Vector embedding logic
-│   │   ├── __pycache__/
-│   │   ├── __init__.py
-│   │   ├── model_loader.py
-│   │   └── vector_db.py
-│   ├── evaluation/				# Evaluation scripts
-│   │   ├── __init__.py
-│   │   └── evaluator.py
-│   ├── plagiarism_api/			# FastAPI endpoints
-│   │   ├── __init__.py
-│   │   └── main.py
-│   ├── repository_indexer/		# Repo cloning & processing
-│   │   ├── __pycache__/
-│   │   ├── __init__.py
-│   │   ├── cloner.py
-│   │   └── file_processor.py
-│   └── tests/
-│       ├── __pycache__/
-│       ├── test_api.py
-│       └── test_vector_db.py
-├── venv/
-├── .dockerignore
-├── .env
-├── .gitignore
-├── docker-compose.yml			# Orchestration config
-├── README.md
-└── requirements.txt				# Python dependencies
-
-
+├── src/                          # Application source code
+│   ├── embedding_service/        # Vector embedding logic
+│   ├── evaluation/               # Evaluation scripts
+│   ├── plagiarism_api/           # FastAPI endpoints
+│   ├── repository_indexer/       # Repo cloning & processing
+│   └── tests/                    # Test cases
+├── .env                          # Environment variables
+├── docker-compose.yml            # Container orchestration
+└── requirements.txt              # Python dependencies
 ```
-
 
 ## Installation
 
+### Prerequisites
 
-###Prerequisites
-
-- Docker Desktop
-- Python 3.10+
+- Docker Desktop 4.15+
+- Python 3.10+ (for local development)
 - OpenAI API key
+- Git LFS installed
 
+### Quick Start
 
-### Setup Instructions
-
-1. **Clone Repository**
-   ```bash
-   git clone https://github.com/Marimiroshnikova/code-plagiarism.git
-   cd code-plagiarism
-
-
-
-### Installation
-
-1. Clone repository:
+1. Clone repository and download models:
 ```bash
 git clone https://github.com/Marimiroshnikova/code-plagiarism.git
 cd code-plagiarism
+git lfs install
+git clone https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
 ```
 
-2. Create `.env` file:
-```
-OPENAI_API_KEY=your_api_key_here
+2. Configure environment:
+```bash
+echo "OPENAI_API_KEY=your_api_key_here" > .env
 ```
 
-###Docker Setup
-
-1. Build and start containers:
+3. Start services:
 ```bash
 docker-compose up --build
 ```
 
-2. Services overview:
-- **Indexer**: Clones repos (runs first)
-- **Embedding Service**: Creates vector DB
-- **API**: http://localhost:8080
-- **Evaluator**: Runs comparison tests
+## Service Architecture
+
+| Service              | Description                                  | Port  |
+|----------------------|----------------------------------------------|-------|
+| Indexer              | Clones & processes repositories             | -     |
+| Embedding Service    | Generates vector embeddings                 | -     |
+| API                  | REST interface for plagiarism checks        | 8080  |
+| Evaluator            | Runs comparative performance tests          | -     |
 
 ## Configuration
 
-### Repositories
-`configs/repositories.txt`:
+### Repository List
+Edit `configs/repositories.txt`:
 ```
 https://github.com/tensorflow/models
 https://github.com/pytorch/examples
 https://github.com/keras-team/keras-io
 ```
 
-### Model Settings
-`configs/model_config.py`:
-```python
-MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-EMBEDDING_DIM = 384
-MAX_FILES = 1000  # Max files to process
-CHUNK_SIZE = 5000 # Code chunk size
+### Model Configuration
+`configs/model_config.yaml`:
+```yaml
+embedding_model:
+  name: "all-MiniLM-L6-v2"
+  dimensions: 384
+  max_files: 1000
+  chunk_size: 5000
 ```
 
-## API Usage
+## API Documentation
 
-### Check Code Plagiarism
+### Check Code Similarity
 ```bash
 curl -X POST "http://localhost:8080/check" \
--H "Content-Type: application/json" \
--d '{"code":"import tensorflow as tf\nprint(\"Hello TF\")"}'
+  -H "Content-Type: application/json" \
+  -d '{"code":"import tensorflow as tf\nprint(\"Hello TF\")"}'
 ```
 
-Sample Response:
+**Response:**
 ```json
 {
-  "result": "კი",
-  "references": [
-    "File: models/official/vision/modeling/backbones/resnet.py",
-    "File: examples/cpp/autograd/autograd.cpp"
+  "similarity_score": 0.92,
+  "matches": [
+    {
+      "file": "models/official/vision/modeling/backbones/resnet.py",
+      "confidence": 0.89
+    }
   ]
 }
 ```
 
-## Evaluation
+## Evaluation Framework
 
-The system compares three approaches:
-1. RAG-only (vector similarity)
-2. LLM-only (GPT-3.5 analysis)
-3. Combined system
+The system compares three detection approaches:
 
-Results are saved in CSV format:
+1. Vector Search Only
+2. LLM Analysis Only
+3. Combined Hybrid Approach
+
+Run evaluations:
 ```bash
-ls data/evaluation_results/
-# results_20240515_142356.csv
+docker exec -it code-plagiarism-evaluator-1 python evaluation/evaluator.py
 ```
 
-## Troubleshooting
+Results are saved as CSV:
+```
+data/evaluation_results/results_20240515_142356.csv
+```
+
+## Troubleshooting Guide
 
 ### Common Issues
 
-**Import Errors**
+**Model Download Failures**
 ```bash
-# Ensure PYTHONPATH is set in Dockerfiles
-ENV PYTHONPATH=/app
+# Verify LFS installation
+git lfs install
+git lfs pull
 ```
 
-**Docker Build Failures**
+**Docker Build Errors**
 ```bash
-# Clean rebuild:
+# Full clean rebuild:
 docker-compose down --volumes --rmi all
 docker-compose up --build
 ```
 
-**API Timeouts**
-```ini
-# Increase timeout in .env
-OPENAI_TIMEOUT=30
+**API Connection Issues**
+```bash
+# Check service status
+docker ps -a
+# View logs
+docker logs code-plagiarism-api-1
 ```
 
-### View Logs
-```bash
-docker logs code-plagiarism-api-1
-docker logs code-plagiarism-embedding_service-1
+### Performance Tuning
+
+Increase API timeout in `.env`:
+```ini
+REQUEST_TIMEOUT=30
+MAX_RESPONSE_SIZE=1048576
 ```
 
 ## Contributing
 
-1. Fork the repository
-2. Create feature branch:
+1. Create feature branch:
 ```bash
-git checkout -b feature/new-algorithm
+git checkout -b feature/improved-algorithm
 ```
-3. Commit changes:
+
+2. Test changes:
 ```bash
-git commit -m "Add new similarity metric"
+docker-compose up --build --force-recreate
 ```
-4. Push to branch:
-```bash
-git push origin feature/new-algorithm
-```
-5. Open pull request
 
+3. Submit pull request with:
+- Implementation details
+- Test results
+- Documentation updates
 
-
-
-
-
+---

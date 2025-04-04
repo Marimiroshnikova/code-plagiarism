@@ -4,10 +4,9 @@ import logging
 from pathlib import Path
 from typing import List, Dict, Union
 import chromadb
+import hashlib
 from chromadb.config import Settings
 from src.embedding_service.model_loader import EmbeddingModel
-
-
 from configs.model_config import (
     MODEL_NAME,
     EMBEDDING_DIM,
@@ -39,7 +38,7 @@ class VectorDB:
             raise FileNotFoundError(f"File index not found at {file_index_path}")
         
         with open(file_index_path) as f:
-            files = json.load(f)[:MAX_FILES]  
+            files = json.load(f)[:MAX_FILES]
 
         documents = []
         metadatas = []
@@ -53,7 +52,9 @@ class VectorDB:
                     break
                 documents.append(chunk)
                 metadatas.append({"path": file['path'], "chunk": chunk_idx})
-                ids.append(f"{idx}_{chunk_idx}")
+                content_hash = hashlib.md5(file['content'].encode()).hexdigest()
+                unique_id = f"{content_hash}_{chunk_idx}"
+                ids.append(unique_id)  
                 chunk_counter += 1
             if chunk_counter >= MAX_CHUNKS:
                 break
