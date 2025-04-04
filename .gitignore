@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+data/
+.env
+.dockerignore
+docker-compose*.yml
+
+.vscode/
+.idea/
+
+*.log
+*.tmp
