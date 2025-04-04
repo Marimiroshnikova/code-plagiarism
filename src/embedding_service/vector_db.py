@@ -7,7 +7,7 @@ import chromadb
 from chromadb.config import Settings
 from src.embedding_service.model_loader import EmbeddingModel
 
-# კონფიგის იმპორტი
+
 from configs.model_config import (
     MODEL_NAME,
     EMBEDDING_DIM,

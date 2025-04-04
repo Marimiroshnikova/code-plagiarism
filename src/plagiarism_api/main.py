@@ -7,7 +7,7 @@ from openai import OpenAI
 import os
 from pathlib import Path
 from typing import Optional
-from src.embedding_service.vector_db import VectorDB
+from src.embedding_service.vector_db import VectorDB 
 
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
 

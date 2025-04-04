@@ -8,7 +8,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from src.embedding_service.vector_db import VectorDB
-from plagiarism_api.main import app
+from src.plagiarism_api.main import app
 
 import sys
 from pathlib import Path
