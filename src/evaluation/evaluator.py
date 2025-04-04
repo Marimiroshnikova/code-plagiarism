@@ -3,13 +3,21 @@
 import csv
 import os
 from datetime import datetime
-from pathlib import Path
 from typing import List, Dict
 from openai import OpenAI
 from dotenv import load_dotenv
 from fastapi.testclient import TestClient
-from embedding_service.vector_db import VectorDB
+from src.embedding_service.vector_db import VectorDB
 from plagiarism_api.main import app
+
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).parent.parent.parent
+sys.path.append(str(project_root))
+
+from src.embedding_service.vector_db import VectorDB  
+from src.plagiarism_api.main import app
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))

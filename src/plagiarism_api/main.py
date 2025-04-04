@@ -7,7 +7,7 @@ from openai import OpenAI
 import os
 from pathlib import Path
 from typing import Optional
-from embedding_service.vector_db import VectorDB
+from src.embedding_service.vector_db import VectorDB
 
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
@@ -32,7 +32,7 @@ User Code Excerpt:
 Reference Matches:
 {references}
 
-Answer strictly 'yes' or 'no'. If uncertain, respond 'no'."""
+Answer strictly 'yes' or 'no'. """
 
 @app.post("/check")
 async def check_plagiarism(request: CodeRequest):
@@ -49,7 +49,7 @@ async def check_plagiarism(request: CodeRequest):
 
         # LLM analysis
         response = client.chat.completions.create(
-            model="gpt-4-turbo",
+            model="gpt-3.5-turbo",
             messages=[{
                 "role": "user",
                 "content": PROMPT_TEMPLATE.format(
@@ -63,11 +63,7 @@ async def check_plagiarism(request: CodeRequest):
         )
         
         answer = response.choices[0].message.content.strip().lower()
-        return {
-            "is_plagiarism": answer == "yes",
-            "references": results["metadata"] if answer == "yes" else [],
-            "scores": results["scores"]
-        }
+        return {"result": "კი" if answer.lower() == "yes" else "არა"}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

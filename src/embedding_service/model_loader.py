@@ -1,11 +1,9 @@
 from sentence_transformers import SentenceTransformer
-import yaml
+from configs.model_config import MODEL_NAME, EMBEDDING_DIM
 
 class EmbeddingModel:
     def __init__(self):
-        with open("configs/model_config.yaml") as f:
-            config = yaml.safe_load(f)
-        self.model = SentenceTransformer(config["model_name"])
-        
+        self.model = SentenceTransformer(MODEL_NAME)
+    
     def encode(self, text: str) -> list:
         return self.model.encode(text).tolist()
